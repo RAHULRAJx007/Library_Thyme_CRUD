@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Book List</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body style="background-color:#f8f9fa; font-family:'Segoe UI', sans-serif;">
+
+  <div class="container mt-5">
+    <h1 class="text-center text-primary mb-4">Book List</h1>
+
+    <table class="table table-bordered table-striped shadow">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Author</th>
+          <th>Publication Year</th>
+          <th>ISBN</th>
+          <th>Cover Image</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="book : ${books}">
+          <td th:text="${book.id}"></td>
+          <td th:text="${book.title}"></td>
+          <td th:text="${book.author}"></td>
+          <td th:text="${book.publicationYear}"></td>
+          <td th:text="${book.isbn}"></td>
+          <td th:text="${book.filename}"></td>
+          <td>
+            <a th:href="@{/updatebook/{id}(id=${book.id})}" class="btn btn-sm btn-warning me-2">Edit</a>
+            <a th:href="@{/delete/{id}(id=${book.id})}" 
+               onclick="return confirm('Are you sure you want to delete this book?')" 
+               class="btn btn-sm btn-danger">Delete</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="text-center mt-3">
+      <a th:href="@{/bookform}" class="btn btn-success">Add New Book</a>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
