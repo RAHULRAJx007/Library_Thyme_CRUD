@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.books.model.Book;
@@ -33,9 +34,10 @@ public class BookController {
 		return "book_form";
 	}
 	@PostMapping("/save")
-	public String save(@Valid @ModelAttribute Book book,Model model,BindingResult result ,@RequestParam("imageFile")MultipartFile file) throws IOException {
+	public String save(@Valid @ModelAttribute Book book,BindingResult result ,Model model,@RequestParam("imageFile")MultipartFile file) throws IOException {
 		
 		if(result.hasErrors()) {
+			model.addAttribute("Book", book);
 			return "book_form";
 		}
 		
@@ -54,7 +56,7 @@ public class BookController {
     public String listBooks(Model model) {
         List<Book> books = service.getAllBooks();
         model.addAttribute("books", books);
-        return "book_list"; 
+        return "book_list";
     }
 	@GetMapping("/updatebook/{id}")
 	public String update(@PathVariable int id, Model model) {
@@ -63,10 +65,33 @@ public class BookController {
 		return "updatebook";
 	}
 	@PostMapping("/updatebook/{id}")
-	 public String updateBook(@ModelAttribute Book book) {
-        service.save(book);
-        return "redirect:/list";
-    }
+	public String updateBook(@PathVariable int id,
+	                         @ModelAttribute Book book,
+	                         @RequestParam("coverImage") MultipartFile file) throws IOException {
+
+	    Book existingBook = service.getBookById(id);
+
+	    // keep old image if no new image uploaded
+	    if (!file.isEmpty()) {
+	        book.setImg(file.getBytes()); // update image
+	    } else {
+	        book.setImg(existingBook.getImg()); // keep old image
+	    }
+
+	    service.save(book);
+	    return "redirect:/list";
+	}
+	@GetMapping("/delete/{id}")
+	public String deleteBook(@PathVariable int id) {
+	    service.deleteBookById(id);
+	    return "redirect:/list";
+	}
+	@GetMapping("/book/image/{id}")
+	@ResponseBody
+	public byte[] getBookImage(@PathVariable int id) {
+	    Book book = service.getBookById(id);
+	    return book.getImg(); // byte[] from DB
+	}
 
 //	@GetMapping("/cookieform")
 //	public String form() {

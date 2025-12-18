@@ -39,6 +39,10 @@ public class BookService {
 			
 			return repo.findById(id).orElse(null);
 		}
+		
+		public void deleteBookById(int id) {
+		    repo.deleteById(id);
+		}
 
 
 }
